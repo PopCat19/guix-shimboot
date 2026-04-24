@@ -12,6 +12,7 @@
 #   is_guix_root "/newroot"
 
 # shellcheck shell=bash
+# shellcheck source-path=SCRIPTDIR/../shimboot-core/tools/lib
 
 set -Eeuo pipefail
 
@@ -78,6 +79,7 @@ guix_menu_entry() {
     local kernel_version
 
     # Try to extract kernel version from generation
+    # shellcheck disable=SC2012
     kernel_version="$(basename "$(ls -d "$gen_path/kernel" 2>/dev/null | head -1)" 2>/dev/null || echo "unknown")"
 
     echo "Guix System (gen $gen_num) [$kernel_version]"
@@ -101,7 +103,9 @@ test_guix_detection() {
 # Only run if executed directly (not sourced)
 if [[ "${BASH_SOURCE[0]:-}" == "${0}" ]]; then
 	# Source logging if available
+	# shellcheck disable=SC1091
 	if [[ -f "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh" ]]; then
+		# shellcheck disable=SC1091
 		source "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh"
 	fi
 
