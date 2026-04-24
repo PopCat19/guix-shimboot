@@ -2,6 +2,8 @@
 ;;
 ;; Purpose: Define Guix services for shimboot integration
 ;;
+;; UNTESTED — Not verified with `guix system build`
+;;
 ;; This module:
 ;; - Provides vendor partition mount service
 ;; - Provides kernel module loading service

@@ -2,6 +2,8 @@
 #
 # Purpose: Guix-specific generation detection and boot functions
 #
+# UNTESTED — Only syntax-checked, not run against real Guix paths
+#
 # This module:
 # - Detects Guix system profiles
 # - Lists Guix generations

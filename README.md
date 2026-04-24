@@ -1,8 +1,20 @@
 # Guix-Shimboot
 
-Run Guix System on ChromeOS hardware using the shimboot approach.
+**UNTESTED PROOF-OF-CONCEPT — Do not expect this to boot yet.**
 
-## Overview
+Port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Guix System on ChromeOS hardware.
+
+## Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `boards/default.scm` | Untested | Syntax valid in Guile, needs Guix |
+| `config/*.scm` | Untested | Needs `guix system build` |
+| `bootloader/bin/bootstrap.sh` | Syntax only | shellcheck clean, untested on real paths |
+| `shimboot-core.patch` | Untested | Not applied to bootstrap.sh yet |
+| End-to-end boot | **Not tested** | Needs hardware |
+
+## Overview (Intended Behavior)
 
 Guix-shimboot is a port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Guix. It enables running a full Guix System on ChromeOS devices by:
 

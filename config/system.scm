@@ -2,6 +2,8 @@
 ;;
 ;; Purpose: Define operating-system for Chromebook hardware
 ;;
+;; UNTESTED — Not verified with `guix system build`
+;;
 ;; This module:
 ;; - Imports board-specific configuration
 ;; - Sets up Shepherd services for vendor partition

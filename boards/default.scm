@@ -2,6 +2,8 @@
 ;;
 ;; Purpose: Define hardware characteristics for each ChromeOS board
 ;;
+;; UNTESTED — Syntax valid in Guile, needs Guix modules
+;;
 ;; This module provides board-specific configuration for:
 ;; - WiFi kernel modules
 ;; - CPU type (intel/amd/arm)

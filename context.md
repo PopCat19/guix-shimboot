@@ -1,5 +1,7 @@
 # Guix-Shimboot Context
 
+UNTESTED PROOF-OF-CONCEPT
+
 Proof-of-concept for running Guix System on ChromeOS hardware.
 
 ## Structure
