@@ -104,9 +104,9 @@ test_guix_detection() {
 if [[ "${BASH_SOURCE[0]:-}" == "${0}" ]]; then
 	# Source logging if available
 	# shellcheck disable=SC1091
-	if [[ -f "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh" ]]; then
+	if [[ -f "${BASH_SOURCE[0]%/*}/../../shimboot-core/tools/lib/logging.sh" ]]; then
 		# shellcheck disable=SC1091
-		source "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh"
+		source "${BASH_SOURCE[0]%/*}/../../shimboot-core/tools/lib/logging.sh"
 	fi
 
 	case "${1:-}" in

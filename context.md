@@ -6,7 +6,7 @@ Proof-of-concept for running Guix System on ChromeOS hardware.
 
 - `boards/` — Hardware database per Chromebook model
 - `config/` — Guix operating-system and service definitions
-- `bootstrap/` — Guix generation detection functions
+- `bootloader/bin/` — Guix generation detection functions
 - `shimboot-core/` — Shared nixos-shimboot components (submodule)
 
 ## Vocabulary

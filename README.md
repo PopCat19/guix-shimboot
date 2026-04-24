@@ -44,7 +44,7 @@ Guix-shimboot is a port of [nixos-shimboot](https://github.com/PopCat19/nixos-sh
 |-----------|---------|
 | `boards/` | Hardware database per Chromebook model |
 | `config/` | Guix operating-system and services |
-| `bootstrap/` | Generation detection for Guix |
+| `bootloader/bin/` | Generation detection for Guix |
 | `shimboot-core/` | Shared components (git submodule) |
 
 ## Prerequisites
