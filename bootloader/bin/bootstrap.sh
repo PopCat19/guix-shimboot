@@ -1,4 +1,4 @@
-# guix-bootstrap.sh
+# bootstrap.sh
 #
 # Purpose: Guix-specific generation detection and boot functions
 #
@@ -8,7 +8,7 @@
 # - Provides Guix init path
 #
 # Usage: source this file, then call functions
-#   source guix-bootstrap.sh
+#   source bootstrap.sh
 #   is_guix_root "/newroot"
 
 # shellcheck shell=bash
