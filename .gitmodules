@@ -1,0 +1,3 @@
+[submodule "shimboot-core"]
+	path = shimboot-core
+	url = https://github.com/PopCat19/nixos-shimboot.git

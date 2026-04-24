@@ -1,0 +1,16 @@
+# Build artifacts
+/work/
+*.img
+*.iso
+
+# Guix
+/guix-profile
+/.guix-authorizations
+
+# Editor
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store

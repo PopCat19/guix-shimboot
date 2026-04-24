@@ -1,0 +1,59 @@
+--- a/bootloader/bin/bootstrap.sh
++++ b/bootloader/bin/bootstrap.sh
+@@ -XXX,XX +XXX,XX @@
+ # Source distro-specific detection
++for f in /lib/shimboot/distro-*.sh; do
++    [ -f "$f" ] && source "$f"
++done
+
+ # === Distro Detection ===
+@@ -XXX,XX +XXX,XX @@
+     if is_nixos_root "$root_dir"; then
+         echo "nixos"
++    elif is_guix_root "$root_dir" 2>/dev/null; then
++        echo "guix"
+     else
+         echo "unknown"
+     fi
+@@ -XXX,XX +XXX,XX @@
+ get_distro_init() {
+     local root_dir="$1"
+     local distro
+-    distro="$(detect_distro "$root_dir")"
++    distro="${DISTRO:-$(detect_distro "$root_dir")}"
+
+     case "$distro" in
+         nixos)
+             get_nixos_init "$root_dir"
++            ;;
++        guix)
++            guix_init_path "$root_dir"
+             ;;
+         *)
+             # Fallback: look for common init paths
+             for init in "$root_dir/sbin/init" "$root_dir/bin/init"; do
+                 [ -x "$init" ] && echo "$init" && return
+             done
+             ;;
+     esac
+ }
+
+ # === Generation Menu ===
+@@ -XXX,XX +XXX,XX @@
+ list_generations() {
+     local root_dir="$1"
+     local distro
+     distro="$(detect_distro "$root_dir")"
+
+     case "$distro" in
+         nixos)
+             list_nixos_generations "$root_dir"
++            ;;
++        guix)
++            list_guix_generations "$root_dir"
+             ;;
+         *)
+             return 1
+             ;;
+     esac
+ }
