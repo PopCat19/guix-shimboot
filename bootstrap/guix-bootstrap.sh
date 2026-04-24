@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# Guix Bootstrap Functions
+# guix-bootstrap.sh
 #
 # Purpose: Guix-specific generation detection and boot functions
 #
@@ -7,6 +6,12 @@
 # - Detects Guix system profiles
 # - Lists Guix generations
 # - Provides Guix init path
+#
+# Usage: source this file, then call functions
+#   source guix-bootstrap.sh
+#   is_guix_root "/newroot"
+
+# shellcheck shell=bash
 
 set -Eeuo pipefail
 
@@ -78,15 +83,36 @@ guix_menu_entry() {
     echo "Guix System (gen $gen_num) [$kernel_version]"
 }
 
-# === Integration with bootstrap.sh ===
-# Add to is_rootfs_guix() in modified bootstrap.sh:
+# === Standalone test runner ===
 
-# is_rootfs_guix() {
-#     local root_dir="$1"
-#     is_guix_root "$root_dir"
-# }
-#
-# get_guix_init() {
-#     local root_dir="$1"
-#     guix_init_path "$root_dir"
-# }
+test_guix_detection() {
+	local test_root="${1:-/var/guix/profiles}"
+	log_info "Testing Guix detection at: $test_root"
+
+	if is_guix_root "$test_root"; then
+		log_info "Guix system detected"
+		log_info "Generations:"
+		list_guix_generations "$test_root" | head -5
+	else
+		log_info "Not a Guix root: $test_root"
+	fi
+}
+
+# Only run if executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]:-}" == "${0}" ]]; then
+	# Source logging if available
+	if [[ -f "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh" ]]; then
+		source "${BASH_SOURCE[0]%/*}/../shimboot-core/tools/lib/logging.sh"
+	fi
+
+	case "${1:-}" in
+		test)
+			test_guix_detection "${2:-/var/guix/profiles}"
+			;;
+		*)
+			echo "Usage: $0 test [root-dir]"
+			echo "Functions are meant to be sourced, not executed."
+			echo "  source $0"
+			;;
+	esac
+fi
