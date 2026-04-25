@@ -8,8 +8,8 @@ Port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Gui
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| `boards/default.scm` | Untested | Syntax valid in Guile, needs Guix |
-| `config/*.scm` | Untested | Needs `guix system build` |
+| `modules/boards.scm` | Module loads ✓ | Needs guix-daemon to verify full build |
+| `modules/config/*.scm` | Module loads ✓ | Needs guix-daemon to verify full build |
 | `bootloader/bin/bootstrap.sh` | Syntax only | shellcheck clean, untested on real paths |
 | `shimboot-core.patch` | Untested | Not applied to bootstrap.sh yet |
 | End-to-end boot | **Not tested** | Needs hardware |
@@ -54,7 +54,7 @@ Guix-shimboot is a port of [nixos-shimboot](https://github.com/PopCat19/nixos-sh
 
 | Directory | Purpose |
 |-----------|---------|
-| `boards/` | Hardware database per Chromebook model |
+| `boards.scm` | Hardware database per Chromebook model |
 | `config/` | Guix operating-system and services |
 | `bootloader/bin/` | Generation detection for Guix |
 | `shimboot-core/` | Shared components (git submodule) |
@@ -76,11 +76,11 @@ cd guix-shimboot
 # Add nonguix channel
 guix pull -C channels.scm
 
-# Build system (dry run)
-guix system build config/system.scm
+# Build system config (needs guix-daemon running)
+guix system build -L ./modules modules/config/system.scm
 
-# Build image (after assembling rootfs)
-# TODO: build script
+# Build image
+./tools/build/assemble-guix-image.sh --board dedede
 ```
 
 ## Board Support

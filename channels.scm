@@ -4,6 +4,8 @@
 ;;
 ;; Usage: guix pull -C channels.scm
 
+(use-modules (guix channels))
+
 (cons* (channel
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix")

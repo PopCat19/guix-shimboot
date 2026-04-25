@@ -394,7 +394,7 @@ check_disk_space 25 "$WORKDIR"
 CURRENT_STEP="1/12"
 log_step "$CURRENT_STEP" "Build Guix system derivation"
 
-GUIX_CONFIG="$PROJECT_ROOT/config/system.scm"
+GUIX_CONFIG="$PROJECT_ROOT/modules/config/system.scm"
 if [ ! -f "$GUIX_CONFIG" ]; then
 	log_error "Guix system config not found: $GUIX_CONFIG"
 	exit 1
@@ -403,12 +403,12 @@ fi
 log_info "Building Guix system from $GUIX_CONFIG..."
 
 if [ "$DRY_RUN" -eq 1 ]; then
-	log_info "[DRY-RUN] Would run: guix system build $GUIX_CONFIG"
+	log_info "[DRY-RUN] Would run: guix system build -L $PROJECT_ROOT/modules $GUIX_CONFIG"
 	GUIX_OUT="/tmp/guix-shimboot-dry-run"
 else
 	GUIX_LOG="$WORKDIR/guix-build.log"
 	log_info "Build log: $GUIX_LOG"
-	if ! guix system build "$GUIX_CONFIG" >"$GUIX_LOG" 2>&1; then
+	if ! guix system build -L "$PROJECT_ROOT/modules" "$GUIX_CONFIG" >"$GUIX_LOG" 2>&1; then
 		log_error "Guix system build failed!"
 		log_error "Last 20 lines of build log:"
 		tail -20 "$GUIX_LOG" >&2

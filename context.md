@@ -6,8 +6,8 @@ Proof-of-concept for running Guix System on ChromeOS hardware.
 
 ## Structure
 
-- `boards/` — Hardware database per Chromebook model
-- `config/` — Guix operating-system and service definitions
+- `modules/boards.scm` — Hardware database per Chromebook model
+- `modules/config/` — Guix operating-system and service definitions
 - `bootloader/bin/` — Guix generation detection functions
 - `tools/build/` — Image assembly script
 - `tools/lib/` — Shared shell libraries (logging, fallback)
