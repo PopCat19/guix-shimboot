@@ -221,13 +221,12 @@ esac
 # === Sudo ===
 require_sudo() {
 	if [ "${SKIP_SUDO:-0}" -eq 1 ]; then
-		log_info "sudo elevation skipped (--no-sudo)"
 		return 0
 	fi
 	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
 		log_info "Re-executing with sudo -H..."
 		SUDO_ENV=()
-		for var in BOARD ROOTFS_FLAVOR DRIVERS_MODE FIRMWARE_UPSTREAM DRY_RUN WORKDIR; do
+		for var in BOARD ROOTFS_FLAVOR DRIVERS_MODE FIRMWARE_UPSTREAM DRY_RUN INSPECT_AFTER CLEANUP_WORKDIR WORKDIR; do
 			[ -n "${!var:-}" ] && SUDO_ENV+=("$var=${!var}")
 		done
 		exec sudo -E -H "${SUDO_ENV[@]}" "$0" --no-sudo
@@ -239,16 +238,6 @@ if [ -z "$WORKDIR" ]; then
 	WORKDIR="$(pwd)/work/${BOARD}"
 fi
 IMAGE="$WORKDIR/guix-shimboot.img"
-
-# === Summary ===
-log_info "Board:           $BOARD"
-log_info "Rootfs flavor:   $ROOTFS_FLAVOR"
-log_info "Drivers mode:    $DRIVERS_MODE"
-log_info "Upstream firmware: $FIRMWARE_UPSTREAM"
-log_info "Workspace:       $WORKDIR"
-if [ "$DRY_RUN" -eq 1 ]; then
-	log_warn "DRY RUN MODE: No destructive operations will be performed"
-fi
 
 # === Safe execution for dry-run ===
 safe_exec() {
@@ -369,9 +358,34 @@ trap handle_interrupt INT
 # === Require sudo before destructive operations ===
 require_sudo
 
+# === Cleanup stale workspace ===
+if [ -d "$WORKDIR" ]; then
+	log_info "Cleaning up old work directory..."
+	# Detach stale loop devices from previous runs
+	while read -r _stale_dev; do
+		[ -n "$_stale_dev" ] || continue
+		log_info "Detaching stale loop device $_stale_dev from previous run..."
+		losetup -d "$_stale_dev" 2>/dev/null || true
+	done < <(losetup -l --noheadings -O NAME,BACK-FILE 2>/dev/null |
+		awk -v d="$WORKDIR" '$2 ~ "^" d {print $1}')
+	unset _stale_dev
+	safe_exec rm -rf "$WORKDIR"
+fi
+mkdir -p "$WORKDIR" "$WORKDIR/mnt_src_rootfs" "$WORKDIR/mnt_bootloader" "$WORKDIR/mnt_rootfs"
+
+# === Summary (after sudo, so printed once) ===
+log_info "Board:             $BOARD"
+log_info "Rootfs flavor:     $ROOTFS_FLAVOR"
+log_info "Drivers mode:      $DRIVERS_MODE"
+log_info "Upstream firmware: $FIRMWARE_UPSTREAM"
+log_info "Workspace:         $WORKDIR"
+if [ "$DRY_RUN" -eq 1 ]; then
+	log_warn "DRY RUN MODE: No destructive operations will be performed"
+fi
+
 # === Pre-flight checks ===
 check_dependencies
-check_disk_space 25 "$(dirname "$WORKDIR")"
+check_disk_space 25 "$WORKDIR"
 
 # === Step 1: Build Guix system ===
 CURRENT_STEP="1/12"
@@ -436,7 +450,8 @@ fi
 
 safe_exec sudo umount "$WORKDIR/mnt_guix"
 
-# Get actual rootfs content size for partition sizing
+# Rootfs partition size: content + 15% overhead + 100MB safety margin
+ROOTFS_PART_SIZE=$((ROOTFS_SIZE_MB * 115 / 100 + 100))
 log_info "Rootfs partition size: ${ROOTFS_PART_SIZE}MB (with safety margin)"
 
 # === Step 3: Fetch ChromeOS SHIM ===
