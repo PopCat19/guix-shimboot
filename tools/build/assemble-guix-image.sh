@@ -51,16 +51,16 @@ done
 # === Supported boards ===
 readonly SUPPORTED_BOARDS=(dedede octopus zork nissa hatch grunt snappy brya jacuzzi corsola hana trogdor)
 
-# === Defaults ===
-BOARD=""
-ROOTFS_FLAVOR="base"
-DRIVERS_MODE="vendor"
-FIRMWARE_UPSTREAM=1
-DRY_RUN=0
-INSPECT_AFTER=0
-CLEANUP_WORKDIR=1
+# === Defaults (env overrides take precedence) ===
+BOARD="${BOARD:-}"
+ROOTFS_FLAVOR="${ROOTFS_FLAVOR:-base}"
+DRIVERS_MODE="${DRIVERS_MODE:-vendor}"
+FIRMWARE_UPSTREAM="${FIRMWARE_UPSTREAM:-1}"
+DRY_RUN="${DRY_RUN:-0}"
+INSPECT_AFTER="${INSPECT_AFTER:-0}"
+CLEANUP_WORKDIR="${CLEANUP_WORKDIR:-1}"
 SKIP_SUDO=0
-WORKDIR=""
+WORKDIR="${WORKDIR:-}"
 IMAGE=""
 SECONDS=0
 
@@ -174,7 +174,7 @@ while [ $# -gt 0 ]; do
 		shift
 		;;
 	*)
-		log_warn "Unknown option: ${1:-}"
+		[ -n "${1:-}" ] && log_warn "Unknown option: ${1:-}"
 		shift
 		;;
 	esac
@@ -230,7 +230,7 @@ require_sudo() {
 		for var in BOARD ROOTFS_FLAVOR DRIVERS_MODE FIRMWARE_UPSTREAM DRY_RUN WORKDIR; do
 			[ -n "${!var:-}" ] && SUDO_ENV+=("$var=${!var}")
 		done
-		exec sudo -E -H "${SUDO_ENV[@]}" "$0" --no-sudo "${BASH_ARGV[@]:-}"
+		exec sudo -E -H "${SUDO_ENV[@]}" "$0" --no-sudo
 	fi
 }
 
