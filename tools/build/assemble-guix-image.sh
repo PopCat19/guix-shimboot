@@ -274,6 +274,20 @@ check_dependencies() {
 		exit 1
 	fi
 
+	# Verify guix-daemon is reachable
+	if ! guix describe >/dev/null 2>&1; then
+		log_error "guix-daemon is not running (cannot reach /var/guix/daemon-socket/socket)"
+		log_error "Start it manually:"
+		log_error "  sudo guix-daemon --build-users-group=guixbuild &"
+		log_error "Or add to your NixOS configuration:"
+		log_error "  services.guix.enable = true;"
+		log_error ""
+		log_error "For the guix-shimboot NixOS module:"
+		log_error "  imports = [ \"${PROJECT_ROOT}\" ];"
+		log_error "  services.guix-shimboot.enable = true;"
+		exit 1
+	fi
+
 	log_success "All dependencies available"
 }
 
@@ -372,7 +386,11 @@ if [ -d "$WORKDIR" ]; then
 	done < <(losetup -l --noheadings -O NAME,BACK-FILE 2>/dev/null |
 		awk -v d="$WORKDIR" '$2 ~ "^" d {print $1}')
 	unset _stale_dev
-	safe_exec rm -rf "$WORKDIR"
+	if [ "${EUID:-$(id -u)}" -eq 0 ]; then
+		rm -rf "$WORKDIR"
+	else
+		sudo rm -rf "$WORKDIR"
+	fi
 fi
 mkdir -p "$WORKDIR" "$WORKDIR/mnt_src_rootfs" "$WORKDIR/mnt_bootloader" "$WORKDIR/mnt_rootfs"
 

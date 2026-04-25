@@ -4,6 +4,7 @@
 #
 # This flake provides:
 # - Dev shell with guix, cgpt, parted, and image assembly tools
+# - NixOS module to run guix-daemon (for guix system build)
 
 {
   description = "Guix-Shimboot: GNU Guix System on ChromeOS hardware";
@@ -48,9 +49,35 @@
           echo "  cgpt:    $(command -v cgpt 2>/dev/null || echo 'not found')"
           echo "  parted:  $(parted --version 2>/dev/null | head -1 || echo 'not found')"
           echo ""
+
+          # Check if guix-daemon is reachable
+          if ! guix describe >/dev/null 2>&1; then
+            echo "  ⚠ guix-daemon not running — guix system build will fail"
+            echo "    Start it:  guix-daemon --build-users-group=guixbuild &"
+            echo "    Or add to NixOS config:"
+            echo "      services.guix.enable = true;"
+            echo ""
+          fi
+
           echo "Build:  ./tools/build/assemble-guix-image.sh --board dedede"
           echo "Help:   ./tools/build/assemble-guix-image.sh --help"
         '';
       };
+
+      # NixOS module to enable guix-daemon
+      nixosModules.guix-daemon =
+        { config, lib, pkgs, ... }:
+        {
+          options.services.guix-shimboot = {
+            enable = lib.mkEnableOption "guix-daemon for guix-shimboot builds";
+          };
+
+          config = lib.mkIf config.services.guix-shimboot.enable {
+            services.guix = {
+              enable = true;
+              package = pkgs.guix;
+            };
+          };
+        };
     };
 }
