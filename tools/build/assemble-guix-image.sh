@@ -261,13 +261,16 @@ check_dependencies() {
 
 	if [ "${#missing[@]}" -gt 0 ]; then
 		log_error "Missing dependencies: ${missing[*]}"
-		log_error "Install them and re-run."
+		log_error "Install them and re-run. For a dev shell:"
+		log_error "  nix develop"
 		exit 1
 	fi
 
 	# Verify guix is operational
 	if ! guix --version >/dev/null 2>&1; then
 		log_error "guix command failed. Ensure guix is installed and in PATH."
+		log_error "For a dev shell with all dependencies:"
+		log_error "  nix develop"
 		exit 1
 	fi
 
@@ -399,16 +402,22 @@ fi
 
 log_info "Building Guix system from $GUIX_CONFIG..."
 
-# Build the Guix system derivation
-# --verbosity=2 shows build progress
 if [ "$DRY_RUN" -eq 1 ]; then
 	log_info "[DRY-RUN] Would run: guix system build $GUIX_CONFIG"
 	GUIX_OUT="/tmp/guix-shimboot-dry-run"
 else
-	GUIX_OUT=$(guix system build "$GUIX_CONFIG" 2>&1 | tail -1)
+	GUIX_LOG="$WORKDIR/guix-build.log"
+	log_info "Build log: $GUIX_LOG"
+	if ! guix system build "$GUIX_CONFIG" >"$GUIX_LOG" 2>&1; then
+		log_error "Guix system build failed!"
+		log_error "Last 20 lines of build log:"
+		tail -20 "$GUIX_LOG" >&2
+		exit 1
+	fi
+	GUIX_OUT=$(tail -1 "$GUIX_LOG")
 	if [ ! -d "$GUIX_OUT" ]; then
-		log_error "Guix system build failed or output path not found"
-		log_error "Output: $GUIX_OUT"
+		log_error "Guix build output is not a directory: $GUIX_OUT"
+		log_error "Full build log: $GUIX_LOG"
 		exit 1
 	fi
 fi
