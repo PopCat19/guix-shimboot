@@ -14,7 +14,7 @@ Port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Gui
 | `shimboot-core.patch` | Untested | Not applied to bootstrap.sh yet |
 | End-to-end boot | **Not tested** | Needs hardware |
 
-## Overview (Intended Behavior)
+## Overview
 
 Guix-shimboot is a port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Guix. It enables running a full Guix System on ChromeOS devices by:
 
