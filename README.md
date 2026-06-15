@@ -1,6 +1,6 @@
 # Guix-Shimboot
 
-**UNTESTED PROOF-OF-CONCEPT — Do not expect this to boot yet.**
+**UNTESTED PROOF-OF-CONCEPT, Do not expect this to boot yet.**
 
 Port of [nixos-shimboot](https://github.com/PopCat19/nixos-shimboot) for GNU Guix System on ChromeOS hardware.
 
